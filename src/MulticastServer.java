@@ -1,34 +1,54 @@
-package temp;
+
 
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class MulticastServer {
-
-	public static void main(String[] args) {
+public class MulticastServer 
+{
+	RxThread rxThread;
+	TxThread txThread;
+	
+	public MulticastServer(Layer[] layers) 
+	{
 	
 		DatagramSocket socket  = null;
 		InetAddress    address = null;
 		int            port    = 2000;
 		String         host    = "10.0.0.255";
 		
-		System.out.println("Multicast Server");
+		System.out.println("Multicast Server Starting...");
 		
-		try {
+		try 
+		{
 			socket = new DatagramSocket(port);
 			address = InetAddress.getByName(host);
-		} catch (IOException e) {
+		} 
+		catch (IOException e) 
+		{
 			e.printStackTrace();
 			System.exit(1);
 		}
 		
-		new RxThread(socket).start();
-		new TxThread(socket, address, port).start();
-		
-		while(true){}
-
-
+		rxThread = new RxThread(socket, layers);
+		txThread = new TxThread(socket, address, port);
+		rxThread.start();
+		txThread.start();
 	}
-
+	
+	public Layer[] getUpdates()
+	{
+		return rxThread.getLayerUpdates();
+	}
+	
+	public void setTxMessage(String msg)
+	{
+		txThread.setNextMessage(msg);
+		return;
+	}
+	
+	public void setUpdatedFalse()
+	{
+		rxThread.setUpdated();
+	}
 }

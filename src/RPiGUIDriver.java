@@ -29,6 +29,7 @@ public class RPiGUIDriver extends JFrame implements WindowListener
 	private static final String[] layerNames = {"Layer 1", "Layer 2"};
 	private JComboBox layerChoice;
 	private JTextArea layerInfo;
+	private MulticastServer server;
 	
 	public static void main(String[] args) 
 	{
@@ -44,7 +45,8 @@ public class RPiGUIDriver extends JFrame implements WindowListener
 		for(int i = 0; i < 2; i++)
 		{
 			layers[i] = new Layer(i);
-		}		
+		}
+		server = new MulticastServer(layers);
 		initLayerChoice();
 		initLayerInfo();
 		
@@ -54,7 +56,7 @@ public class RPiGUIDriver extends JFrame implements WindowListener
 		for(int i = 0; i < 16; i++)
 		{
 			rpis[i] = new JLabel(green);
-			rpis[i].setToolTipText("Temperature in Celcius: " + Integer.toString(layers[0].getNode(i).getNodeTemp()));
+			rpis[i].setToolTipText("Temperature in Celcius: " + Float.toString(layers[0].getNode(i).getNodeTemp()));
 			rpiGrid.add(rpis[i]);
 		}
 		setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -81,16 +83,27 @@ public class RPiGUIDriver extends JFrame implements WindowListener
 		layerChoice.addItemListener(
 				new ItemListener()
 				{
-					public void itemStateChanged(ItemEvent event) {
+					public void itemStateChanged(ItemEvent event) 
+					{
 						if(event.getStateChange() == ItemEvent.SELECTED)
 						{
-							int[] temps = new int[16];
+							float[] temps = new float[16];
+							layers = server.getUpdates();
+							for(int i = 0; i < 16; i ++)
+							{
+								if(!layers[layerChoice.getSelectedIndex()].getNode(i).getUpdated())
+								{
+									layers[layerChoice.getSelectedIndex()].getNode(i).setNodeTemp(999);
+								}
+							}
 							for(int i = 0; i < 16; i++)
 							{
 								temps[i] = layers[layerChoice.getSelectedIndex()].getNode(i).getNodeTemp();
 								if(temps[i] == 999)
 								{
 									rpis[i].setIcon(red);
+									String msg = "reset:"+layerChoice+"."+i%4+"."+ i/4;
+									server.setTxMessage(msg);
 								}
 								else if(temps[i] > 61)
 								{
@@ -102,6 +115,17 @@ public class RPiGUIDriver extends JFrame implements WindowListener
 								}
 							}
 							updateLayerInfo(layerChoice.getSelectedIndex());
+						}
+						try 
+						{
+							layerChoice.setEnabled(false);
+							server.setUpdatedFalse();
+							Thread.sleep(30000);
+							layerChoice.setEnabled(true);
+						} 
+						catch (InterruptedException e) 
+						{
+							e.printStackTrace();
 						}
 					}
 				}

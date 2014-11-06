@@ -1,20 +1,30 @@
 
 public class Node 
 {
-	private int nodeTemp;
+	private float nodeTemp;
+	boolean updated = false;
 	
 	public Node()
 	{
 		setNodeTemp(60);
 	}
 	
-	public int getNodeTemp()
+	public float getNodeTemp()
 	{
 		return nodeTemp;
 	}
-	public void setNodeTemp(int temp)
+	public void setNodeTemp(float temp)
 	{
 		nodeTemp = temp;
 	}
 	
+	public boolean getUpdated()
+	{
+		return updated;
+	}
+	
+	public void setUpdated(boolean status)
+	{
+		updated = status;
+	}
 }

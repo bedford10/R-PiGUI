@@ -44,6 +44,11 @@ public class Layer
 		return nodes[nodeNo];
 	}
 	
+	public Node[] getNodes()
+	{
+		return nodes;
+	}
+	
 	public double getAverageTemp()
 	{
 		double temp = 0;
