@@ -26,6 +26,7 @@ public class TxThread extends Thread {
 			if(!"".equals(message))
 			{
 				String tmp = message;
+				System.out.println("Sending message: " + tmp + "\n");
 				DatagramPacket packet = new DatagramPacket(tmp.getBytes(), tmp.length(), address, port);
 				try 
 				{

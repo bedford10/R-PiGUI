@@ -7,12 +7,16 @@ public class RxThread extends Thread
 	
 	private DatagramSocket socket  = null;
 	private Layer[] layers = new Layer[2];
+	DatagramPacket message;
+	ParseThread parseThread;
 	
 	public RxThread(DatagramSocket socket, Layer[] _layers)
 	{
 		super("RxThread");
 		this.socket  = socket;
 		layers = _layers;
+		//parseThread = new ParseThread();
+		//parseThread.start();
 	}
 	
 	@Override
@@ -28,6 +32,7 @@ public class RxThread extends Thread
 				
 				// Print the received packet
 				parseMessage(packet);
+				//parseThread.start(packet);
 				String msg = packet.getAddress().getHostAddress().toString() + ": ";
 				msg += new String(packet.getData());
 				System.out.println(msg);				
@@ -49,9 +54,9 @@ public class RxThread extends Thread
 		String[] nodeInfo = ipAddress.split(".");
 		String[] msgInfo = message.split(":");
 		
-		int row = Integer.parseInt(nodeInfo[2]);
-		int column = Integer.parseInt(nodeInfo[3]);
-		int layerNumber = Integer.parseInt(nodeInfo[1]);
+		int row = Integer.parseInt(nodeInfo[2]) - 101;
+		int column = Integer.parseInt(nodeInfo[3]) - 101;
+		int layerNumber = Integer.parseInt(nodeInfo[1]) - 115;
 		float temp = Float.parseFloat(msgInfo[1]);
 		
 		if("temp".equals(msgInfo[0]))
@@ -64,6 +69,7 @@ public class RxThread extends Thread
 	public Layer[] getLayerUpdates()
 	{
 		return layers;
+		//return parseThread.getLayers();
 	}
 	
 	public void setUpdated()
@@ -73,7 +79,7 @@ public class RxThread extends Thread
 			if(i < 16)
 				layers[0].getNode(i).setUpdated(false);
 			else
-				layers[1].getNode(i).setUpdated(false);
+				layers[1].getNode(i-16).setUpdated(false);
 		}
 	}
 }

@@ -34,7 +34,7 @@ public class RPiGUIDriver extends JFrame implements WindowListener
 	public static void main(String[] args) 
 	{
 		RPiGUIDriver myWindow = new RPiGUIDriver("R-Pi Manager");
-		myWindow.setSize(800, 600);
+		myWindow.setSize(400, 175);
 		myWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myWindow.setVisible(true);
 	}
@@ -87,6 +87,7 @@ public class RPiGUIDriver extends JFrame implements WindowListener
 					{
 						if(event.getStateChange() == ItemEvent.SELECTED)
 						{
+							layerChoice.setSelectedIndex(layerChoice.getSelectedIndex());
 							float[] temps = new float[16];
 							layers = server.getUpdates();
 							for(int i = 0; i < 16; i ++)
@@ -102,7 +103,7 @@ public class RPiGUIDriver extends JFrame implements WindowListener
 								if(temps[i] == 999)
 								{
 									rpis[i].setIcon(red);
-									String msg = "reset:"+layerChoice+"."+i%4+"."+ i/4;
+									String msg = "reset:"+ 10 + (layerChoice.getSelectedIndex()+115) + "." + (i%4 + 101) + "." + (i/4 + 101);
 									server.setTxMessage(msg);
 								}
 								else if(temps[i] > 61)

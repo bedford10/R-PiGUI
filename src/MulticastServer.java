@@ -1,6 +1,7 @@
 
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
@@ -16,6 +17,7 @@ public class MulticastServer
 		InetAddress    address = null;
 		int            port    = 2000;
 		String         host    = "10.0.0.255";
+		//String         host    = "169.254.153.85";
 		
 		System.out.println("Multicast Server Starting...");
 		
